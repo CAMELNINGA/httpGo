@@ -14,7 +14,7 @@ type Page struct {
 }
 
 //teml
-var templates = template.Must(template.ParseFiles("html/edit.html", "html/view.html"))
+var templates = template.Must(template.ParseFiles("html/view.html", "html/edit.html"))
 
 //save_page
 func (p *Page) save() error {
@@ -44,7 +44,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil { // если ошибка переходим в едит
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 	}
-	renderTemplate(w, "html/view.html", p)
+	renderTemplate(w, "view", p)
 }
 
 // исправление в файле
@@ -54,7 +54,7 @@ func editHendler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		p = &Page{Title: title}
 	}
-	renderTemplate(w, "html/edit.html", p)
+	renderTemplate(w, "edit", p)
 }
 
 // save page
@@ -72,7 +72,7 @@ func saveHendler(w http.ResponseWriter, r *http.Request) {
 
 // render html
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	err := templates.ExecuteTemplate(w, "html/"+tmpl+".html", p)
+	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -80,6 +80,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 }
 
 func main() {
+
 	http.HandleFunc("/view/", viewHandler)
 	http.HandleFunc("/edit/", editHendler)
 	http.HandleFunc("/save/", saveHendler)
