@@ -13,6 +13,9 @@ type Page struct {
 	Body  []byte
 }
 
+//teml
+var templates = template.Must(template.ParseFiles("html/edit.html", "html/view.html"))
+
 //save_page
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
@@ -69,14 +72,10 @@ func saveHendler(w http.ResponseWriter, r *http.Request) {
 
 // render html
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	t, err := template.ParseFiles(tmpl)
+	err := templates.ExecuteTemplate(w, "html/"+tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	err = t.Execute(w, p)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
